@@ -172,6 +172,12 @@ Run step 6 to see the authoritative current list.
 | A single model errors while others work | shared-pool pressure / transient limit | Retry later; if the failure is `finish=max-tokens`, raise `max_tokens` |
 | `MissingClientBundleError` on `dsh web` | web frontend bundle not built | `pnpm run build:lib:client && pnpm run build:web`, then restart |
 
+## Alternative: the `llm-user-agent-override` plugin
+
+The `userAgent: opencode` field is the one-line fix when you own the settings section. The companion **[`llm-user-agent-override` plugin](PLUGIN.md)** delivers the same wire result as an independent **plug-in / plug-out composition unit** instead: it registers an `llm/stream` waterfall listener, injects the custom `User-Agent` per configured route (`routes: { opencode-zen: opencode }`), and falls through with `yield* next()` for every other route — no kernel changes, so the project runs exactly as before without it.
+
+Use it when the mapping should travel with the code that owns the calls, when you cannot touch the `llm-pi-ai` settings document, or when you want a working reference for bypassing an adapter from a waterfall listener. The package lives in [`packages/llm/llm-user-agent-override/`](packages/llm/llm-user-agent-override/) (photocopy it into your dsh clone's `packages/llm/`), with full install / mount / unmount / verify steps and the environment-dependency list in [`PLUGIN.md`](PLUGIN.md) ([中文](PLUGIN.zh-CN.md)).
+
 ## Web UI (optional)
 
 ```sh

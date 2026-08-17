@@ -172,6 +172,12 @@ curl -sS -H "Authorization: Bearer $KEY" https://opencode.ai/zen/v1/models \
 | 个别模型报错、其他正常 | 共享池压力 / 临时限流 | 稍后重试；若失败为 `finish=max-tokens`，调大 `max_tokens` |
 | `dsh web` 报 `MissingClientBundleError` | Web 前端 bundle 未构建 | `pnpm run build:lib:client && pnpm run build:web` 后重启 |
 
+## 替代方案：`llm-user-agent-override` 插件
+
+`userAgent: opencode` 字段是在你持有 settings 时的"一行方案"。配套的 **[`llm-user-agent-override` 插件](PLUGIN.zh-CN.md)** 把同一个 wire 结果做成一个独立的**随插随弃组合单元**：它注册一个 `llm/stream` waterfall 监听器，按配置的路由注入自定义 `User-Agent`（`routes: { opencode-zen: opencode }`），其余路由 `yield* next()` 原样放行——内核零改动，没有它项目照常运行。
+
+适合：映射想跟着调用方代码走、不能动 `llm-pi-ai` settings 文档、或想要一个"从 waterfall 绕过适配器"的工作参考。包在 [`packages/llm/llm-user-agent-override/`](packages/llm/llm-user-agent-override/)（照抄进你 dsh clone 的 `packages/llm/` 即可），完整安装/挂载/卸载/验证步骤与环境依赖清单见 [`PLUGIN.zh-CN.md`](PLUGIN.zh-CN.md)（[English](PLUGIN.md)）。
+
 ## Web 界面（可选）
 
 ```sh
